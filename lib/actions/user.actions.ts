@@ -3,8 +3,6 @@ import * as z from "zod";
 
 import { db } from "../db";
 import { userProfileSchema, userSettingSchema } from "../validator";
-import { generateVerificationToken } from "../tokens";
-import { sendVerificationEmail } from "../mail";
 
 import { revalidatePath } from "next/cache";
 import {
@@ -14,6 +12,7 @@ import {
   UpdateUserParams,
 } from "@/types";
 import { handleError } from "../utils";
+import { generateVerificationToken } from "../token";
 
 //! GET USER BY ID ----- PRISMA MODE
 export async function getUserById(id: string) {

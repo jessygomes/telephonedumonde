@@ -1,7 +1,7 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth, { type DefaultSession } from "next-auth";
 
-import authOptions from "./auth.config";
+import authConfig from "./auth.config";
 import { db } from "./lib/db";
 
 import { Role } from "@prisma/client";
@@ -45,21 +45,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       // Ici, si le user n'est pas vérifié, il ne peut pas se connecter
       const existingUser = user.id ? await getUserById(user.id) : null;
-      if (!existingUser || !existingUser?.emailVerified) return false;
+      // if (!existingUser || !existingUser?.emailVerified) return false;
 
       // Ici, si le user a activé l'auth à deux facteurs, on vérifie si il a bien confirmé le code
-      if (existingUser.isTwofactorEnabled) {
-        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
-          existingUser.id
-        );
+      // if (existingUser.isTwofactorEnabled) {
+      //   const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
+      //     existingUser.id
+      //   );
 
-        if (!twoFactorConfirmation) return false;
+      //   if (!twoFactorConfirmation) return false;
 
-        // Supprimer la confirmation de l'auth à deux facteurs pour la prochaine connexion (il devra reconfirmer avec le nouveau code recu par email)
-        await db.twoFactorConfirmation.delete({
-          where: { id: twoFactorConfirmation.id },
-        });
-      }
+      //   // Supprimer la confirmation de l'auth à deux facteurs pour la prochaine connexion (il devra reconfirmer avec le nouveau code recu par email)
+      //   await db.twoFactorConfirmation.delete({
+      //     where: { id: twoFactorConfirmation.id },
+      //   });
+      // }
 
       return true;
     },
@@ -112,5 +112,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   // On change la stratégie de session : avec prisma, on doit utiliser "jwt"
   session: { strategy: "jwt" },
   // On passe la config d'auth.config
-  ...authOptions,
+  ...authConfig,
 });

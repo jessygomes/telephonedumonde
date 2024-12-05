@@ -8,7 +8,7 @@
   4. Importer le fichier auth.config.ts dans le fichier auth.ts
 */
 
-import { AuthOptions } from "next-auth";
+import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
@@ -16,11 +16,11 @@ import bcrypt from "bcryptjs";
 import { getUserByEmail } from "./lib/actions/user.actions";
 import { userLoginSchema } from "./lib/validator";
 
-const authOptions: AuthOptions = {
+export default {
   providers: [
     Google({
-      clientId: process.env.AUTH_GOOGLE_ID || "",
-      clientSecret: process.env.AUTH_GOOGLE_SECRET || "",
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
       authorization: {
         params: {
           prompt: "consent",
@@ -30,10 +30,6 @@ const authOptions: AuthOptions = {
       },
     }),
     Credentials({
-      credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
-      },
       async authorize(credentials) {
         const validatedFields = userLoginSchema.safeParse(credentials);
 
@@ -59,6 +55,4 @@ const authOptions: AuthOptions = {
       },
     }),
   ],
-};
-
-export default authOptions;
+} satisfies NextAuthConfig;
