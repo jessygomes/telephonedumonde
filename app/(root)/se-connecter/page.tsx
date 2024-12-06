@@ -3,10 +3,10 @@ import { Suspense } from "react";
 
 export default function page() {
   return (
-    <div>
+    <section className="">
       <Suspense>
         <LoginForm />
       </Suspense>
-    </div>
+    </section>
   );
 }
