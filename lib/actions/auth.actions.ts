@@ -4,19 +4,19 @@ import { db } from "../db";
 import bcrypt from "bcryptjs";
 
 import {
-  newPasswordSchema,
-  ResetSchema,
+  // newPasswordSchema,
+  // ResetSchema,
   userLoginSchema,
   userRegisterSchema,
 } from "../validator";
 
 import { getUserByEmail } from "./user.actions";
-import { generateVerificationToken } from "../token";
+// import { generateVerificationToken } from "../token";
 
+import { AuthError } from "next-auth";
 import { signIn, signOut } from "@/auth";
 
 import { DEFAULT_LOGIN_REDIRECT } from "@/route";
-import AuthError from "next-auth";
 import { revalidatePath } from "next/cache";
 
 // import {
@@ -198,11 +198,11 @@ export const register = async (values: z.infer<typeof userRegisterSchema>) => {
 };
 
 // //! LOGOUT ACTION
-// export const logout = async () => {
-//   // On peut dans cette fonction supprimer des cookies ou des tokens de session du User par exemple
-//   await signOut();
-//   revalidatePath("/");
-// };
+export const logout = async () => {
+  // On peut dans cette fonction supprimer des cookies ou des tokens de session du User par exemple
+  await signOut();
+  revalidatePath("/");
+};
 
 // //! VERIFICATION EMAIL ACTION
 // export const newVerification = async (token: string) => {

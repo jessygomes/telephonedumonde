@@ -6,7 +6,7 @@ import { db } from "./lib/db";
 
 import { Role } from "@prisma/client";
 
-import { getTwoFactorConfirmationByUserId } from "./lib/actions/two-factor-confirmation";
+// import { getTwoFactorConfirmationByUserId } from "./lib/actions/two-factor-confirmation";
 import { getUserById } from "./lib/actions/user.actions";
 import { getAccountByUserId } from "./lib/actions/account";
 
@@ -45,6 +45,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       // Ici, si le user n'est pas vérifié, il ne peut pas se connecter
       const existingUser = user.id ? await getUserById(user.id) : null;
+
+      if (!existingUser) return false;
       // if (!existingUser || !existingUser?.emailVerified) return false;
 
       // Ici, si le user a activé l'auth à deux facteurs, on vérifie si il a bien confirmé le code
