@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { BackButton } from "./BackBtn";
 import { Social } from "./Social";
 
@@ -35,6 +36,12 @@ export const CardWrapper = ({
       <div>
         <BackButton label={backButtonLabel} href={backButtonHref} />
       </div>
+      <Link
+        className="text-center text-noir-100 text-xs hover:text-white/70 transition-all ease-in-out duration-150"
+        href="/auth/reset"
+      >
+        Mot de passe oublié ?
+      </Link>
     </div>
   );
 };

@@ -4,6 +4,8 @@ import { db } from "../db";
 import bcrypt from "bcryptjs";
 
 import {
+  newPasswordSchema,
+  ResetSchema,
   // newPasswordSchema,
   // ResetSchema,
   userLoginSchema,
@@ -11,7 +13,6 @@ import {
 } from "../validator";
 
 import { getUserByEmail } from "./user.actions";
-// import { generateVerificationToken } from "../token";
 
 import { AuthError } from "next-auth";
 import { signIn, signOut } from "@/auth";
@@ -19,20 +20,14 @@ import { signIn, signOut } from "@/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/route";
 import { revalidatePath } from "next/cache";
 
-// import {
-//   generatePasswordResetToken,
-//   generateTwoFactorToken,
-//   generateVerificationToken,
-// } from "../tokens";
-// import {
-//   sendPasswordResetEmail,
-//   sendTwoFactorTokenEmail,
-//   sendVerificationEmail,
-// } from "../mail";
-// import { getVerificationTokenByToken } from "./verification-token";
+import {
+  generatePasswordResetToken,
+  generateVerificationToken,
+} from "../token";
+import { getVerificationTokenByToken } from "./verification-token";
+import { getPasswordResetTokenByToken } from "./password-reset";
+
 // import { getPasswordResetTokenByToken } from "./password-reset";
-// import { getTwoFactorTokenbyEmail } from "./two-factors-token";
-// import { getTwoFactorConfirmationByUserId } from "./two-factor-confirmation";
 
 //! LOGIN ACTION
 export const login = async (values: z.infer<typeof userLoginSchema>) => {
@@ -42,8 +37,6 @@ export const login = async (values: z.infer<typeof userLoginSchema>) => {
   if (!validateFields.success) {
     return { error: "Formulaire Invalide" };
   }
-
-  // const { email, password, code } = validateFields.data;
 
   const { email, password } = validateFields.data;
 
@@ -58,73 +51,32 @@ export const login = async (values: z.infer<typeof userLoginSchema>) => {
     return { error: "Identifiants invalides." };
   }
 
-  // if (!existingUser.emailVerified) {
-  //   const verificationToken = await generateVerificationToken(
-  //     existingUser.email
-  //   );
+  if (!existingUser.emailVerified) {
+    const verificationToken = await generateVerificationToken(
+      existingUser.email
+    );
 
-  //   await sendVerificationEmail(
-  //     verificationToken.email,
-  //     verificationToken.token
-  //   );
+    await fetch(`${process.env.BASE_URL}/api/emails`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        sender: {
+          name: "Téléphone du monde",
+          address: "no-reply@telephonedumonde.com",
+        },
+        recipient: { name: "CJ", address: verificationToken.email },
+        subject: "Vérifiez votre adresse email",
+        message: `Cliquez sur le lien suivant pour vérifier votre adresse email : ${process.env.BASE_URL}/auth/new-verification?token=${verificationToken.token}`,
+      }),
+    });
 
-  //   return {
-  //     success:
-  //       "Votre compte n'est pas vérifié : un email de vérification a été envoyé à votre adresse email.",
-  //   };
-  // }
-
-  // Vérifier si l'utilisateur a activé l'authentification à deux facteurs
-  // if (existingUser.isTwofactorEnabled && existingUser.email) {
-  //   if (code) {
-  //     // Vérifier le code
-  //     const twoFactorToken = await getTwoFactorTokenbyEmail(existingUser.email);
-
-  //     if (!twoFactorToken) {
-  //       return { error: "Code invalide." };
-  //     }
-
-  //     if (twoFactorToken.token !== code) {
-  //       return { error: "Code invalide." };
-  //     }
-
-  //     const hasExpired = new Date(twoFactorToken.expires) < new Date();
-
-  //     if (hasExpired) {
-  //       return { error: "Code expiré." };
-  //     }
-
-  //     // Supprimer le code si tout va bien + Confirmer l'authentification à deux facteurs
-  //     await db.twoFactorToken.delete({
-  //       where: { id: twoFactorToken.id },
-  //     });
-
-  //     const existingConfirmation = await getTwoFactorConfirmationByUserId(
-  //       existingUser.id
-  //     );
-
-  //     // S'il y a déja une confirmation, on la supprime
-  //     if (existingConfirmation) {
-  //       await db.twoFactorConfirmation.delete({
-  //         where: { id: existingConfirmation.id },
-  //       });
-  //     }
-
-  //     // Confirmation de l'authentification à deux facteurs
-  //     await db.twoFactorConfirmation.create({
-  //       data: {
-  //         userId: existingUser.id,
-  //       },
-  //     });
-  //   } else {
-  //     const twoFactorToken = await generateTwoFactorToken(existingUser.email);
-
-  //     await sendTwoFactorTokenEmail(existingUser.email, twoFactorToken.token);
-
-  //     // Pour indiquer au front-end qu'on va changer l'affichage pour mettre l'input du code à 6 chiffres
-  //     return { twoFactor: true };
-  //   }
-  // }
+    return {
+      success:
+        "Votre compte n'est pas vérifié : un email de vérification a été envoyé à votre adresse email.",
+    };
+  }
 
   // La fonction signIn vient de NextAuth importé depuis "auth.ts"
   try {
@@ -187,9 +139,23 @@ export const register = async (values: z.infer<typeof userRegisterSchema>) => {
     },
   });
 
-  // Génération du token et Envoi d'un email de confirmation avec ce token :
-  // const verificationToken = await generateVerificationToken(email);
-  // await sendVerificationEmail(verificationToken.email, verificationToken.token);
+  // Génération du token et Envoi d'un email de confirmation avec ce token
+  const verificationToken = await generateVerificationToken(email);
+  await fetch(`${process.env.BASE_URL}/api/emails`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      sender: {
+        name: "Téléphone du monde",
+        address: "no-reply@telephonedumonde.com",
+      },
+      recipient: { name: "CJ", address: verificationToken.email },
+      subject: "Vérifiez votre adresse email",
+      message: `Cliquez sur le lien suivant pour vérifier votre adresse email : ${process.env.BASE_URL}/auth/new-verification?token=${verificationToken.token}`,
+    }),
+  });
 
   return {
     success:
@@ -205,108 +171,121 @@ export const logout = async () => {
 };
 
 // //! VERIFICATION EMAIL ACTION
-// export const newVerification = async (token: string) => {
-//   const existingToken = await getVerificationTokenByToken(token);
+export const newVerification = async (token: string) => {
+  const existingToken = await getVerificationTokenByToken(token);
 
-//   if (!existingToken) {
-//     return { error: "Le token n'existe pas." };
-//   }
+  if (!existingToken) {
+    return { error: "Le token n'existe pas." };
+  }
 
-//   const hasExpired = new Date(existingToken.expires) < new Date();
+  const hasExpired = new Date(existingToken.expires) < new Date();
 
-//   if (hasExpired) {
-//     return { error: "Le token a expiré." };
-//   }
+  if (hasExpired) {
+    return { error: "Le token a expiré." };
+  }
 
-//   // Mettre à jour l'email vérifié
-//   const existingUser = await getUserByEmail(existingToken.email);
+  // Mettre à jour l'email vérifié
+  const existingUser = await getUserByEmail(existingToken.email);
 
-//   if (!existingUser) {
-//     return { error: "L'utilisateur n'existe pas." };
-//   }
+  if (!existingUser) {
+    return { error: "L'utilisateur n'existe pas." };
+  }
 
-//   await db.user.update({
-//     where: { id: existingUser.id },
-//     // On met à jour la colonne emailVerified avec la date actuelle + l'email de l'utilisateur si le user a modifier son email (qui sera fait plus tard)
-//     data: { emailVerified: new Date(), email: existingToken.email },
-//   });
+  await db.user.update({
+    where: { id: existingUser.id },
+    // On met à jour la colonne emailVerified avec la date actuelle + l'email de l'utilisateur si le user a modifier son email (qui sera fait plus tard)
+    data: { emailVerified: new Date(), email: existingToken.email },
+  });
 
-//   // Supprimer le token de vérification
-//   await db.verificationToken.delete({
-//     where: { id: existingToken.id },
-//   });
+  // Supprimer le token de vérification
+  await db.verificationToken.delete({
+    where: { id: existingToken.id },
+  });
 
-//   return { success: "Votre email a bien été vérifié." };
-// };
-
-// //! RESET PASSWORD ACTION
-// export const reset = async (values: z.infer<typeof ResetSchema>) => {
-//   const validatedFields = ResetSchema.safeParse(values);
-//   if (!validatedFields.success) {
-//     return { error: "Formulaire invalide." };
-//   }
-
-//   const { email } = validatedFields.data;
-
-//   const existingUser = await getUserByEmail(email);
-//   if (!existingUser) {
-//     return { error: "Email introuvable." };
-//   }
-
-//   // Générer un token de réinitialisation et envoyer un email
-//   const passwordResetToken = await generatePasswordResetToken(email);
-//   await sendPasswordResetEmail(
-//     passwordResetToken.email,
-//     passwordResetToken.token
-//   );
-
-//   return { success: "Un email de réinitialisation a été envoyé." };
-// };
+  return { success: "Votre email a bien été vérifié." };
+};
 
 // //! RESET PASSWORD ACTION
-// export const newPassword = async (
-//   values: z.infer<typeof newPasswordSchema>,
-//   token: string | null
-// ) => {
-//   if (!token) {
-//     return { error: "Token manquant." };
-//   }
+export const reset = async (values: z.infer<typeof ResetSchema>) => {
+  const validatedFields = ResetSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Formulaire invalide." };
+  }
 
-//   const validatedFields = newPasswordSchema.safeParse(values);
-//   if (!validatedFields.success) {
-//     return { error: "Formulaire invalide." };
-//   }
+  const { email } = validatedFields.data;
 
-//   const { password, passwordConfirmation } = validatedFields.data;
-//   if (password !== passwordConfirmation) {
-//     return { error: "Les mots de passe ne correspondent pas." };
-//   }
+  const existingUser = await getUserByEmail(email);
+  if (!existingUser) {
+    return { error: "Email introuvable." };
+  }
 
-//   const existingToken = await getPasswordResetTokenByToken(token);
-//   if (!existingToken) {
-//     return { error: "Token invalide." };
-//   }
+  // Générer un token de réinitialisation et envoyer un email
+  const passwordResetToken = await generatePasswordResetToken(email);
 
-//   const hasExpired = new Date(existingToken.expires) < new Date();
-//   if (hasExpired) {
-//     return { error: "Le token a expiré." };
-//   }
+  await fetch(`${process.env.BASE_URL}/api/emails`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      sender: {
+        name: "Téléphone du monde",
+        address: "no-reply@telephonedumonde.com",
+      },
+      recipient: { name: "CJ", address: passwordResetToken.email },
+      subject: "Réinitialisation de votre mot de passe",
+      message: `Cliquez sur le lien suivant afin de réinitialiser votre mot de passe :  ${process.env.BASE_URL}/auth/nouveau-mot-de-passe?token=${passwordResetToken.token}`,
+    }),
+  });
 
-//   const existingUser = await getUserByEmail(existingToken.email);
-//   if (!existingUser) {
-//     return { error: "Utilisateur introuvable." };
-//   }
+  return { success: "Un email de réinitialisation a été envoyé." };
+};
 
-//   const hashedPassword = await bcrypt.hash(password, 10);
+//! RESET PASSWORD ACTION
+export const newPassword = async (
+  values: z.infer<typeof newPasswordSchema>,
+  token: string | null
+) => {
+  console.log("values", values);
+  if (!token) {
+    return { error: "Token manquant." };
+  }
 
-//   await db.user.update({
-//     where: { id: existingUser.id },
-//     data: { password: hashedPassword },
-//   });
+  const validatedFields = newPasswordSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Formulaire invalide." };
+  }
 
-//   await db.passwordResetToken.delete({
-//     where: { id: existingToken.id },
-//   });
+  const { password, passwordConfirmation } = validatedFields.data;
+  if (password !== passwordConfirmation) {
+    return { error: "Les mots de passe ne correspondent pas." };
+  }
 
-//   return { success: "Mot de passe mis à jour." };
-// };
+  const existingToken = await getPasswordResetTokenByToken(token);
+  if (!existingToken) {
+    return { error: "Token invalide." };
+  }
+
+  const hasExpired = new Date(existingToken.expires) < new Date();
+  if (hasExpired) {
+    return { error: "Le token a expiré." };
+  }
+
+  const existingUser = await getUserByEmail(existingToken.email);
+  if (!existingUser) {
+    return { error: "Utilisateur introuvable." };
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  await db.user.update({
+    where: { id: existingUser.id },
+    data: { password: hashedPassword },
+  });
+
+  await db.passwordResetToken.delete({
+    where: { id: existingToken.id },
+  });
+
+  return { success: "Mot de passe mis à jour." };
+};

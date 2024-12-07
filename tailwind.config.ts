@@ -14,6 +14,16 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        primary: {
+          200: "#d6b4b4",
+          300: "#c89b9b",
+          400: "#ad6969",
+          500: "#d20c08",
+          600: "#b80b07",
+          700: "#9e0906",
+          800: "#840805",
+          900: "#6a0704",
+        },
         noir: {
           900: "#020202",
           800: "#0a0a0a",

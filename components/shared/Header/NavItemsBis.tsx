@@ -42,7 +42,7 @@ export const NavItemsBis = ({ onLinkClick, session }: NavItemsProps) => {
         />
         <input
           type="text"
-          className={`absolute right-0 h-full pl-4 pr-2 py-2 bg-noir-800 rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white transition-all duration-300 placeholder:text-xs ${
+          className={`absolute right-0 h-full pl-4 pr-2 py-2 bg-noir-900 rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-primary-500 transition-all duration-300 placeholder:text-xs ${
             isSearchVisible ? "w-[200px] opacity-100" : "w-0 opacity-0"
           }`}
           placeholder="Recherche..."
@@ -64,11 +64,11 @@ export const NavItemsBis = ({ onLinkClick, session }: NavItemsProps) => {
               >
                 <stop
                   offset="0%"
-                  style={{ stopColor: "#2b00ff", stopOpacity: 1 }}
+                  style={{ stopColor: "#d20c08", stopOpacity: 1 }}
                 />
                 <stop
                   offset="100%"
-                  style={{ stopColor: "#9000ff", stopOpacity: 1 }}
+                  style={{ stopColor: "#6a0704", stopOpacity: 1 }}
                 />
               </linearGradient>
             </defs>

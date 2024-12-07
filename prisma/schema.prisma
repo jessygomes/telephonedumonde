@@ -126,6 +126,7 @@ model PhoneVariant {
   countryId     String
   country       Country       @relation(fields: [countryId], references: [id], onDelete: Cascade)
   price         Float
+  description   String
   stock         Int           @default(0)
   images        PhoneImage[]
   userWishlists UserWishlist[]

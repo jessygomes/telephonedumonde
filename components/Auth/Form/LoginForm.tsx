@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { FormError } from "@/components/shared/Form/FormError";
 import { FormSuccess } from "@/components/shared/Form/FormSucess";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { BottomGradient } from "@/components/ui/BottomGradient";
 
 export const LoginForm = () => {
@@ -81,8 +81,8 @@ export const LoginForm = () => {
   return (
     <CardWrapper
       headerLabel="Connectez-vous"
-      backButtonLabel="Vous n'avez pas de compte ?"
-      backButtonHref="/auth/inscription"
+      backButtonLabel="Vous n'avez pas de compte ? Créer un compte"
+      backButtonHref="/creer-mon-compte"
       showSocial
     >
       <form

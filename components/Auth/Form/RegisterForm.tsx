@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { FormError } from "@/components/shared/Form/FormError";
 import { FormSuccess } from "@/components/shared/Form/FormSucess";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { BottomGradient } from "@/components/ui/BottomGradient";
 import { CardWrapper } from "../CardWrapper";
 
@@ -54,8 +54,8 @@ export const RegisterForm = () => {
   return (
     <CardWrapper
       headerLabel="Inscrivez-vous"
-      backButtonLabel="Vous avezdèjà un compte ? Connectez-vous"
-      backButtonHref="/auth/se-connecter"
+      backButtonLabel="Vous avez dèjà un compte ? Connectez-vous"
+      backButtonHref="/se-connecter"
       showSocial
     >
       <form
