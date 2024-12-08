@@ -1,37 +1,28 @@
 import * as z from "zod";
 
-export const eventFormSchema = z.object({
-  title: z.string().min(2, "Le titre doit contenir au moins 2 caractères"),
-  description: z
-    .string()
-    .min(3, "La description doit contenir au moins 3 caractères")
-    .max(1000, "La description doit contenir au maximum 1000 caractères"),
-  location: z
-    .string()
-    .min(8, "Le lieu doit contenir au moins 8 caractères")
-    .max(400, "La description doit contenir au maximum 400 caractères"),
-  departement: z.string(),
-  ville: z.string(),
-  imageUrl: z.string(),
-  startDateTime: z.date(),
-  endDateTime: z.date(),
-  category: z.string(),
-  price: z.string(),
-  isFree: z.boolean(),
-  url: z.string().url(),
-  maxPlaces: z
-    .number()
-    .min(0, "Le nombre de places doit être supérieur ou égal à 0")
-    .optional(),
-  isBilleterieExterne: z.boolean(),
-  tags: z
-    .array(
-      z.object({
-        id: z.string(),
-        name: z.string(),
-      })
-    )
-    .optional(),
+//! MODEL & VARIANT
+export const modelFormSchema = z.object({
+  brand: z.string().min(2, "La marque est requise"),
+  name: z.string().min(2, "Le nom du modèle est requis"),
+  isActive: z.boolean(),
+});
+
+// SUREMENT A MODIFIER EN FONCTION DES MODIFS ET DU FORM (voir comment on récupère les infos des pays et des images url)
+export const variantFormSchema = z.object({
+  price: z.number().min(0, "Le prix doit être supérieur ou égal à 0"),
+  memory: z.number(),
+  color: z.string(),
+  country: z.string(),
+  description: z.string(),
+  imageUrl: z.string().optional(),
+  stock: z.number().min(0, "Le stock doit être supérieur ou égal à 0"),
+  isActive: z.boolean(),
+});
+
+//! COUNTRY
+export const countryFormSchema = z.object({
+  name: z.string().min(2, "Le nom du pays doit contenir au moins 2 caractères"),
+  imageUrl: z.string().url(),
 });
 
 export const userLoginSchema = z.object({

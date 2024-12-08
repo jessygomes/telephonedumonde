@@ -3,13 +3,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { headerLinkMain } from "@/lib/constant";
+import { headerLinkMain, headerLinkAdmin } from "@/lib/constant";
 
 interface NavItemsProps {
+  session: { user: { name: string; email: string; role: string } } | null;
   onLinkClick?: () => void;
 }
 
-export const NavItems = ({ onLinkClick }: NavItemsProps) => {
+export const NavItems = ({ onLinkClick, session }: NavItemsProps) => {
   const pathname = usePathname();
   // const [activeLink, setActiveLink] = useState<string | null>(null);
   const [indicatorStyle, setIndicatorStyle] = useState({});
@@ -34,14 +35,32 @@ export const NavItems = ({ onLinkClick }: NavItemsProps) => {
     }
   }, [pathname]);
 
+  const links =
+    session?.user.role === "admin" ? headerLinkAdmin : headerLinkMain;
+
+  const isAdminActive = (href: string) => {
+    const adminPaths = [
+      "/admin-tel-du-monde",
+      "/admin-tel-du-monde/clients",
+      "/admin-tel-du-monde/produits",
+      "/admin-tel-du-monde/commandes",
+      "/admin-tel-du-monde/produits/add-model",
+      "/admin-tel-du-monde/produits/add-variant",
+      "/admin-tel-du-monde/produits/models",
+    ];
+    return (
+      adminPaths.includes(pathname) && href.startsWith("/admin-tel-du-monde")
+    );
+  };
+
   return (
     <div className="relative">
       <ul
         ref={navRef}
         className="flex justify-center gap-20 pb-1 relative rounded-md"
       >
-        {headerLinkMain.map((link, index) => {
-          const isActive = pathname === link.href;
+        {links.map((link, index) => {
+          const isActive = pathname === link.href || isAdminActive(link.href);
 
           return (
             <li

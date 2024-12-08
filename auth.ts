@@ -88,7 +88,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
     async jwt({ token }) {
-      console.log("JWT CALLBACK", token); // : Quand on affiche le token, on voit que le "sub" correspond à l'id du user
+      // console.log("JWT CALLBACK", token); // : Quand on affiche le token, on voit que le "sub" correspond à l'id du user
       // Pour ajouter le rôle du user à la session, on passe par le token car c'est grâce à celui ci que le middleware va autoriser ou non l'accès à certaines routes
       // Le rôle va être ajouté au dessus dans la session
       if (!token.sub) return token;

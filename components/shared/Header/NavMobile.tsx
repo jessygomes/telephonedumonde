@@ -9,7 +9,7 @@ import {
 } from "react-icons/md";
 
 interface NavItemsProps {
-  session: { user: { name: string; email: string } } | null;
+  session: { user: { name: string; email: string; role: string } } | null;
 }
 
 export const NavMobile = ({ session }: NavItemsProps) => {

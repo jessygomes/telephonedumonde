@@ -22,7 +22,20 @@ export default async function Header() {
         </Link>
 
         <nav className="hidden md:block">
-          <NavItems />
+          <NavItems
+            session={
+              session
+                ? {
+                    ...session,
+                    user: {
+                      name: session.user?.name ?? "",
+                      email: session.user?.email ?? "",
+                      role: session.user?.role ?? "",
+                    },
+                  }
+                : null
+            }
+          />
         </nav>
 
         <nav className="hidden md:flex items-center">
@@ -34,6 +47,7 @@ export default async function Header() {
                     user: {
                       name: session.user?.name ?? "",
                       email: session.user?.email ?? "",
+                      role: session.user?.role ?? "",
                     },
                   }
                 : null
@@ -49,6 +63,7 @@ export default async function Header() {
                   user: {
                     name: session.user?.name ?? "",
                     email: session.user?.email ?? "",
+                    role: session.user?.role ?? "",
                   },
                 }
               : null

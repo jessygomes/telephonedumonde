@@ -114,6 +114,8 @@ model UserWishlist {
 model PhoneModel {
   id          String        @id @default(cuid())
   name        String
+  brand       String
+  isActive    Boolean       @default(true)
   variants    PhoneVariant[]
 }
 
@@ -127,7 +129,9 @@ model PhoneVariant {
   country       Country       @relation(fields: [countryId], references: [id], onDelete: Cascade)
   price         Float
   description   String
+  caract        String
   stock         Int           @default(0)
+  isActive      Boolean       @default(true)
   images        PhoneImage[]
   userWishlists UserWishlist[]
   orderItems    OrderItem[]
@@ -149,6 +153,7 @@ model PhoneImage {
 model Country {
   id          String   @id @default(cuid())
   name        String   @unique
+  imageUrl    String
   phoneVariants PhoneVariant[]
 
   @@map("country")

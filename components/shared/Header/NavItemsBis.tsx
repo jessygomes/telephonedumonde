@@ -11,7 +11,7 @@ import {
 
 interface NavItemsProps {
   onLinkClick?: () => void;
-  session: { user: { name: string; email: string } } | null;
+  session: { user: { name: string; email: string; role: string } } | null;
 }
 
 export const NavItemsBis = ({ onLinkClick, session }: NavItemsProps) => {
