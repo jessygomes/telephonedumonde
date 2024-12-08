@@ -9,7 +9,7 @@ export default function Home() {
       {/* <h1 className="wrapper text-white font-font1 text-2xl text-center">
           TELEPHONE DU MONDE
         </h1> */}
-      <div className="relative h-screen bg-slate-400">
+      <div className="relative h-screen">
         <Image
           src="/Carrousel/canada.png"
           alt="Logo"

@@ -8,7 +8,7 @@ import { FaEdit } from "react-icons/fa";
 
 interface EditModelButtonProps {
   userId: string | undefined;
-  model: { id: string; name: string; isActive: boolean };
+  model: { id: string; brand: string; name: string; isActive: boolean };
   modelId: string;
 }
 
