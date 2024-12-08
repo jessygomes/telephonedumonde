@@ -10,9 +10,9 @@ export default async function Header() {
   const session = await auth();
 
   return (
-    <header className="wrapper text-white">
+    <header className="px-16 text-white sticky top-0 z-50 bg-noir-900">
       <div className="flex justify-between items-center">
-        <Link href={"/"} className="font-font1 text-2xl tracking-widest">
+        <Link href={"/"} className="">
           <Image
             src="/logo/Telephone_du_monde.png"
             alt="Logo"

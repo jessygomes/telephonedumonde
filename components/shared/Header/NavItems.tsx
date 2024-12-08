@@ -12,7 +12,7 @@ interface NavItemsProps {
 
 export const NavItems = ({ onLinkClick, session }: NavItemsProps) => {
   const pathname = usePathname();
-  // const [activeLink, setActiveLink] = useState<string | null>(null);
+
   const [indicatorStyle, setIndicatorStyle] = useState({});
   const navRef = useRef<HTMLUListElement>(null);
 
@@ -53,11 +53,14 @@ export const NavItems = ({ onLinkClick, session }: NavItemsProps) => {
     );
   };
 
+  const isConceptActive = pathname === "/concept";
+  const isBoutiqueActive = pathname === "/boutique";
+
   return (
     <div className="relative">
       <ul
         ref={navRef}
-        className="flex justify-center gap-20 pb-1 relative rounded-md"
+        className="flex justify-center gap-20 pb-2 relative rounded-md"
       >
         {links.map((link, index) => {
           const isActive = pathname === link.href || isAdminActive(link.href);
@@ -66,8 +69,10 @@ export const NavItems = ({ onLinkClick, session }: NavItemsProps) => {
             <li
               key={index}
               className={`${
-                isActive ? "active z-10 font-font1  text-primary-500" : ""
-              } text-base font-font1 pt-1 px-2 tracking-widest transition-all duration-300`}
+                isActive
+                  ? "active z-10 font-font1  text-white font-bold"
+                  : " font-thin"
+              } text-base font-font1  pt-1 px-2 tracking-widest hover:text-white/70 transition-all duration-300`}
             >
               <Link href={link.href} onClick={handleLinkClick}>
                 {link.label}
@@ -76,9 +81,17 @@ export const NavItems = ({ onLinkClick, session }: NavItemsProps) => {
           );
         })}
       </ul>
-      {/* <div className="h-[1px] neon-bg bg-white rounded-full" /> */}
       <div
-        className="absolute bottom-0 h-8 neon-bg rounded-full bg-white transition-all duration-300"
+        className={`h-[1px] rounded-full transition-all ease-in-out duration-300 ${
+          isConceptActive
+            ? "bg-gradient-to-l from-primary-500 to-noir-900"
+            : isBoutiqueActive
+            ? "bg-gradient-to-r from-noir-900 via-white to-noir-900"
+            : "bg-gradient-to-r from-white to-noir-900"
+        }`}
+      />
+      <div
+        className="absolute bottom-0 h-10  rounded-t-xl bg-transparent  transition-all duration-300"
         style={indicatorStyle}
       />
     </div>
