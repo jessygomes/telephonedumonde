@@ -12,6 +12,9 @@ import { FormSuccess } from "@/components/shared/Form/FormSucess";
 
 import { BottomGradient } from "@/components/ui/BottomGradient";
 import { variantFormSchema } from "@/lib/validator";
+import { addVariant, getCountries } from "@/lib/actions/variant.actions";
+
+import { useEffect } from "react";
 
 type VariantFormProps = {
   userId: string | undefined;
@@ -42,6 +45,20 @@ export default function VariantForm({
 
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
+  const [countries, setCountries] = useState<{ id: string; name: string }[]>([]);
+
+  useEffect(() => {
+    async function fetchCountries() {
+      try {
+        const fetchedCountries = await getCountries();
+        setCountries(fetchedCountries);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des pays :", error);
+      }
+    }
+
+    fetchCountries();
+  }, []);
 
   const initialValues =
     variant && type === "edit"
@@ -73,11 +90,11 @@ export default function VariantForm({
     mode: "onSubmit",
   });
 
-  async function onSubmit(values: any) {
+  async function onSubmit(values: z.infer<typeof variantFormSchema>) { // Récupérer les valeurs du formulaire via variantFormSchema
     setError("");
     setSuccess("");
 
-    //! VOIR POUR STOKCER L'ES IMAGES ET STOCKER LES LIENS DANS LA BASE DE DONNEES (table PhoneImage)
+    //! VOIR POUR STOCKER LES IMAGES ET STOCKER LES LIENS DANS LA BASE DE DONNEES (table PhoneImage)
 
     if (type === "add") {
       if (!userId) {
@@ -87,15 +104,24 @@ export default function VariantForm({
 
       try {
         console.log(values);
-        // const newVariant = await addVariant(data, userId, modelId);
 
-        // if (newVariant && "id" in newVariant) {
-        //   setSuccess("Modèle ajouté avec succès");
-        //   setIsModalOpen(false);
-        //   router.refresh();
-        // } else {
-        //   setError(newVariant.error);
-        // }
+        if (!userId || !modelId) {
+          setError("Les informations nécessaires sont manquantes");
+          return;
+        }
+
+        // TODO : Upload des images
+        
+        // Création d'une variante
+        const newVariant = await addVariant(userId, modelId, values);
+
+        if (newVariant && "id" in newVariant) {
+          setSuccess("Modèle ajouté avec succès");
+          setIsModalOpen(false);
+          router.refresh();
+        } else {
+          setError(newVariant?.statusText || "Erreur");
+        }
       } catch (error) {
         console.log(error);
         setError("Erreur lors de la création de la variante");
@@ -187,6 +213,24 @@ export default function VariantForm({
               {...form.register("color")}
             />
           </div> */}
+          <div>
+            <label className="text-white text-sm" htmlFor="country">
+              Pays de provenance
+            </label>
+            <select
+              id="country"
+              {...form.register("country")} // Enregistre la sélection dans le formulaire
+              className="text-noir-900"
+            >
+              <option value="">-- Sélectionnez un pays --</option>
+              {countries.map((country) => (
+                <option key={country.id} value={country.id}>
+                  {country.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <label className="text-white text-sm" htmlFor="stock">
               Stock

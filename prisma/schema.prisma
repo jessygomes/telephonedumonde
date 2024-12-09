@@ -125,8 +125,8 @@ model PhoneVariant {
   model         PhoneModel    @relation(fields: [modelId], references: [id], onDelete: Cascade)
   memory        Int
   color         String
-  countryId     String
-  country       Country       @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  countryId     String?
+  country       Country?    @relation(fields: [countryId], references: [id], onDelete: Cascade) 
   price         Float
   description   String
   caract        String
@@ -154,7 +154,7 @@ model Country {
   id          String   @id @default(cuid())
   name        String   @unique
   imageUrl    String
-  phoneVariants PhoneVariant[]
+  phoneVariants PhoneVariant[] 
 
   @@map("country")
 }

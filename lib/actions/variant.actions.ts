@@ -46,3 +46,13 @@ export const addVariant = async (
     },
   });
 };
+
+export const getCountries = async () => {
+  try {
+    const countries = await db.country.findMany();
+    return countries;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Echec lors de la récupération des pays.");
+  }
+}

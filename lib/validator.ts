@@ -14,7 +14,7 @@ export const variantFormSchema = z.object({
   color: z.string(),
   country: z.string(),
   description: z.string(),
-  imageUrl: z.string().optional(),
+  imageUrl: z.array(z.string()).optional(), // imageUrl: z.string().optional(),
   stock: z.number().min(0, "Le stock doit être supérieur ou égal à 0"),
   isActive: z.boolean(),
 });
