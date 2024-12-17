@@ -53,8 +53,8 @@ export const NavItems = ({ onLinkClick, session }: NavItemsProps) => {
     );
   };
 
-  const isConceptActive = pathname === "/concept";
-  const isBoutiqueActive = pathname === "/boutique";
+  // const isConceptActive = pathname === "/concept";
+  // const isBoutiqueActive = pathname === "/boutique";
 
   return (
     <div className="relative">
@@ -70,9 +70,9 @@ export const NavItems = ({ onLinkClick, session }: NavItemsProps) => {
               key={index}
               className={`${
                 isActive
-                  ? "active z-10 font-font1  text-white font-bold"
-                  : " font-thin"
-              } text-base font-font1  pt-1 px-2 tracking-widest hover:text-white/70 transition-all duration-300`}
+                  ? "active z-10 font-font1 text-white font-bold"
+                  : "font-thin"
+              } text-sm font-font1 pt-1 px-2 tracking-widest hover:text-white/70 transition-all duration-300`}
             >
               <Link href={link.href} onClick={handleLinkClick}>
                 {link.label}
@@ -81,15 +81,15 @@ export const NavItems = ({ onLinkClick, session }: NavItemsProps) => {
           );
         })}
       </ul>
-      <div
+      {/* <div
         className={`h-[1px] rounded-full transition-all ease-in-out duration-300 ${
           isConceptActive
-            ? "bg-gradient-to-l from-primary-500 to-noir-900"
+            ? "bg-gradient-to-l from-white to-transparent"
             : isBoutiqueActive
-            ? "bg-gradient-to-r from-noir-900 via-white to-noir-900"
-            : "bg-gradient-to-r from-white to-noir-900"
+            ? "bg-gradient-to-r from-noir-900 via-white to-transparent"
+            : "bg-gradient-to-r from-white to-transparent"
         }`}
-      />
+      /> */}
       <div
         className="absolute bottom-0 h-10  rounded-t-xl bg-transparent  transition-all duration-300"
         style={indicatorStyle}

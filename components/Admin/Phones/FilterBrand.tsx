@@ -49,9 +49,9 @@ const FilterBrand = () => {
   return (
     <select
       onChange={(event) => onSelectCategory(event.target.value)}
-      className="p-1 px-4 rounded-md bg-noir-900 text-xs text-white border border-white/70"
+      className="p-1 px-4 rounded-md bg-noir-900 text-xs font-font1 text-white border border-white/70"
     >
-      <option value="" className="text-xs bg-noir-900">
+      <option value="" className="text-xs font-font1 bg-noir-900">
         Toutes les marques
       </option>
       {brands.map((brand) => (

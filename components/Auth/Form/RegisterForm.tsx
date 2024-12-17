@@ -96,7 +96,7 @@ export const RegisterForm = () => {
           </label>
           <Input
             id="mail"
-            placeholder="Tyler"
+            placeholder="monde@mail.com"
             type="text"
             {...form.register("email")}
           />
@@ -111,6 +111,7 @@ export const RegisterForm = () => {
             <Input
               id="password"
               type="password"
+              placeholder="Mot de passe"
               {...form.register("password")}
             />
             <BottomGradient />
@@ -126,6 +127,7 @@ export const RegisterForm = () => {
             <Input
               id="passwordConfirmation"
               type="password"
+              placeholder="Confirmer le mot de passe"
               {...form.register("passwordConfirmation")}
             />
             <BottomGradient />
@@ -136,7 +138,7 @@ export const RegisterForm = () => {
         <FormSuccess message={success} />
 
         <button
-          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+          className="bg-gradient-to-t px-2 relative group/btn from-primary-900  to-primary-500 block w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
           type="submit"
           disabled={isPending}
         >
