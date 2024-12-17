@@ -9,13 +9,17 @@ export const modelFormSchema = z.object({
 
 // SUREMENT A MODIFIER EN FONCTION DES MODIFS ET DU FORM (voir comment on récupère les infos des pays et des images url)
 export const variantFormSchema = z.object({
+  modelId: z.string(),
   price: z.number().min(0, "Le prix doit être supérieur ou égal à 0"),
   memory: z.number(),
   color: z.string(),
   country: z.string(),
   description: z.string(),
-  imageUrl: z.string().optional(),
-  stock: z.number().min(0, "Le stock doit être supérieur ou égal à 0"),
+  imageUrl: z.array(z.string()).optional(),
+  stock: z
+    .number()
+    .min(0, "Le stock doit être supérieur ou égal à 0")
+    .optional(),
   isActive: z.boolean(),
 });
 
