@@ -13,6 +13,9 @@ import { FormError } from "@/components/shared/Form/FormError";
 import { FormSuccess } from "@/components/shared/Form/FormSucess";
 
 import { BottomGradient } from "@/components/ui/BottomGradient";
+import { addCountry } from "@/lib/actions/country.actions";
+import { useUploadThing } from "@/lib/uploadthing";
+import { db } from "@/lib/db";
 
 type CountryFormProps = {
   userId: string | undefined;
@@ -27,6 +30,8 @@ export default function CountryForm({
 
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
+  const [selectedPicture, setSelectedPicture] = useState<File[]>([]); // Fichiers sélectionnés
+  const { startUpload, isUploading } = useUploadThing("imageUploader");
 
   const form = useForm<z.infer<typeof countryFormSchema>>({
     resolver: zodResolver(countryFormSchema),
@@ -40,22 +45,52 @@ export default function CountryForm({
   async function onSubmit(values: z.infer<typeof countryFormSchema>) {
     setError("");
     setSuccess("");
-
-    //! VOIR POUR STOKCER L'iMAGE DU PAYS ET L'URL DE L'IMAGE DANS LA BASE DE DONNEES (table Country)
-
+  
     try {
-      console.log(values);
-      // await addCountry(values);
-      // setSuccess("Pays ajouté avec succès");
-      // form.reset();
-      // setIsModalOpen(false);
-      // router.refresh();
+      console.log("Données du formulaire :", values);
+  
+      // Étape 1 : Ajout du pays
+      const newCountry = await addCountry(values, userId!) as {
+        name: string;
+        imageUrl: string | null;
+        id: string;
+      };
+  
+      if (!newCountry) {
+        throw new Error("Erreur lors de l'ajout du pays");
+      }
+  
+      console.log("Nouveau pays ajouté :", newCountry);
+  
+      // Étape 2 : Upload de l'image
+      if (selectedPicture.length > 0) {
+        const upload = await startUpload(selectedPicture, { countryId: newCountry.id });
+  
+        if (!upload || upload.length === 0) {
+          throw new Error("Erreur lors de l'upload de l'image");
+        }
+  
+        const imageUrl = upload[0].url;
+  
+        // Étape 3 : Mise à jour de l'URL de l'image dans la base de données
+        await db.country.update({
+          where: { id: newCountry.id },
+          data: { imageUrl },
+        });
+  
+        console.log("URL de l'image mise à jour :", imageUrl);
+      }
+  
+      setSuccess("Pays ajouté avec succès");
+      form.reset();
+      setIsModalOpen(false);
+      router.refresh();
     } catch (error) {
-      console.log(error);
-      setError("Erreur lors de l'ajout du modèle");
+      console.error("Erreur dans onSubmit :", error);
+      setError("Erreur lors de l'ajout du pays");
     }
   }
-
+  
   return (
     <div className="flex flex-col gap-8">
       {" "}
@@ -79,19 +114,25 @@ export default function CountryForm({
           />
         </div>
 
-        {/* MODIFER !!!! - INPUT POUR CHARGER UNE IMAGE */}
         <div className="flex flex-col gap-1">
-          <label className="text-white text-sm" htmlFor="name">
-            Ajouter le drapeau
-          </label>
-          {/* <Input
-            id="name"
-            type="text"
-            placeholder="Japon"
-            className="text-noir-900"
-            {...form.register("name")}
-          /> */}
-        </div>
+        <label className="text-white text-sm" htmlFor="images">
+          Ajouter le drapeau
+        </label>
+        <input
+          id="images"
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files?.[0]; // Prend uniquement le premier fichier
+            if (file) {
+              setSelectedPicture([file]); 
+              console.log("Fichier sélectionné :", file);
+            }
+          }}
+          className="text-noir-900"
+        />
+      </div>
+
 
         <FormError message={error} />
         <FormSuccess message={success} />

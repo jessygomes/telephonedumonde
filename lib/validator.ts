@@ -12,17 +12,18 @@ export const variantFormSchema = z.object({
   price: z.number().min(0, "Le prix doit être supérieur ou égal à 0"),
   memory: z.number(),
   color: z.string(),
-  country: z.string(),
+  country: z.string().optional(),
   description: z.string(),
-  imageUrl: z.array(z.string()).optional(), // imageUrl: z.string().optional(),
   stock: z.number().min(0, "Le stock doit être supérieur ou égal à 0"),
   isActive: z.boolean(),
+  modelId: z.string().optional(),
+  imageUrl: z.array(z.string().url()).optional(), // imageUrl: z.string().optional(),
 });
 
 //! COUNTRY
 export const countryFormSchema = z.object({
   name: z.string().min(2, "Le nom du pays doit contenir au moins 2 caractères"),
-  imageUrl: z.string().url(),
+  imageUrl: z.string().url().optional(),
 });
 
 export const userLoginSchema = z.object({

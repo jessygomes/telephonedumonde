@@ -3,18 +3,17 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
 import { FormError } from "@/components/shared/Form/FormError";
 import { FormSuccess } from "@/components/shared/Form/FormSucess";
-
 import { BottomGradient } from "@/components/ui/BottomGradient";
 import { variantFormSchema } from "@/lib/validator";
 import { addVariant, getCountries } from "@/lib/actions/variant.actions";
-
-import { useEffect } from "react";
+import { useUploadThing } from "@/lib/uploadthing";
+import type { OurFileRouter } from "@/app/api/uploadthing/core";
 
 type VariantFormProps = {
   userId: string | undefined;
@@ -34,18 +33,14 @@ type VariantFormProps = {
   setIsModalOpen: (isOpen: boolean) => void;
 };
 
-export default function VariantForm({
-  userId,
-  type,
-  modelId,
-  variant,
-  setIsModalOpen,
-}: VariantFormProps) {
+export default function VariantForm({ userId, type, modelId, variant, setIsModalOpen }: VariantFormProps) {
   const router = useRouter();
-
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [countries, setCountries] = useState<{ id: string; name: string }[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]); // Fichiers sélectionnés
+  const { startUpload, isUploading } = useUploadThing("imageUploader");
+
 
   useEffect(() => {
     async function fetchCountries() {
@@ -71,6 +66,7 @@ export default function VariantForm({
           imageUrl: variant?.imageUrl,
           stock: variant?.stock,
           isActive: variant?.isActive,
+          modelId: modelId,
         }
       : {
           price: 0,
@@ -81,76 +77,66 @@ export default function VariantForm({
           imageUrl: [],
           stock: 0,
           isActive: true,
+          modelId: modelId || "",
         };
 
-  //! Schema de validation
   const form = useForm<z.infer<typeof variantFormSchema>>({
     resolver: zodResolver(variantFormSchema),
     defaultValues: initialValues,
     mode: "onSubmit",
   });
 
-  async function onSubmit(values: z.infer<typeof variantFormSchema>) { // Récupérer les valeurs du formulaire via variantFormSchema
+  async function onSubmit(values: z.infer<typeof variantFormSchema>) {
     setError("");
     setSuccess("");
-
-    //! VOIR POUR STOCKER LES IMAGES ET STOCKER LES LIENS DANS LA BASE DE DONNEES (table PhoneImage)
-
+  
     if (type === "add") {
-      if (!userId) {
-        setError("Connectez-vous pour ajouter un modèle");
-        return;
-      }
-
       try {
-        console.log(values);
-
-        if (!userId || !modelId) {
-          setError("Les informations nécessaires sont manquantes");
+        if (!modelId) {
+          setError("modelId est requis pour ajouter une variante.");
           return;
         }
-
-        // TODO : Upload des images
-        
-        // Création d'une variante
-        const newVariant = await addVariant(userId, modelId, values);
-
-        if (newVariant && "id" in newVariant) {
-          setSuccess("Modèle ajouté avec succès");
-          setIsModalOpen(false);
-          router.refresh();
-        } else {
-          setError(newVariant?.statusText || "Erreur");
+  
+        // Upload des fichiers
+        let imageUrls: string[] = [];
+        if (selectedFiles.length > 0) {
+          const uploadedImages = await startUpload(selectedFiles, { variantId: modelId });
+  
+          if (!uploadedImages || uploadedImages.length === 0) {
+            throw new Error("Échec de l'upload des images.");
+          }
+  
+          imageUrls = uploadedImages.map((file) => file.url);
+          console.log("URLs des images uploadées :", imageUrls);
         }
+  
+        if (imageUrls.length === 0) {
+          setError("Aucune image n'a été uploadée.");
+          return;
+        }
+  
+        // Ajoute les URLs au formulaire
+        values.imageUrl = imageUrls;
+  
+        // Crée la variante
+        const newVariant = await addVariant(values, userId!, modelId);
+  
+        if (!newVariant || !("id" in newVariant)) {
+          setError("Échec lors de la création de la variante");
+          return;
+        }
+  
+        setSelectedFiles([]);
+        setSuccess("Variante et images ajoutées avec succès !");
+        setIsModalOpen(false);
+        router.refresh();
       } catch (error) {
-        console.log(error);
-        setError("Erreur lors de la création de la variante");
-      }
-    }
-
-    if (type === "edit") {
-      if (!variant?.id) {
-        setError("Erreur los de la récpération de la variante");
-        return;
-      }
-
-      try {
-        console.log(values);
-        // const updatedVariant = await updateVariant(data, variant.id);
-
-        // if (updatedVariant && "id" in updatedVariant) {
-        //   setSuccess("Modèle modifié avec succès");
-        //   setIsModalOpen(false);
-        //   router.refresh();
-        // } else {
-        //   setError(updatedVariant.error);
-        // }
-      } catch (error) {
-        console.log(error);
-        setError("Erreur lors de la modification de la variante");
+        console.error("Erreur dans onSubmit :", error);
+        setError("Erreur lors de l'ajout de la variante.");
       }
     }
   }
+  
 
   return (
     <div className="flex flex-col gap-8">
@@ -158,10 +144,7 @@ export default function VariantForm({
         {type === "add" ? "Ajouter un modèle" : "Modifier un modèle"}
       </h3>
 
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="flex gap-4">
           <div>
             <label className="text-white text-sm" htmlFor="price">
@@ -171,7 +154,7 @@ export default function VariantForm({
               id="price"
               type="number"
               className="text-noir-900"
-              {...form.register("price")}
+              {...form.register("price", { valueAsNumber: true })}
             />
           </div>
           <div>
@@ -182,7 +165,7 @@ export default function VariantForm({
               id="memory"
               type="number"
               className="text-noir-900"
-              {...form.register("memory")}
+              {...form.register("memory", { valueAsNumber: true })}
             />
           </div>
           <div>
@@ -198,28 +181,13 @@ export default function VariantForm({
             />
           </div>
 
-          {/* CREER UN DROPDOWN MENU POUR CHOISIR UN PAYS - AFFICHER LA LISTE DES PAYS CREE  */}
-          {/* Le pays doit être relié à la variante : voir schema.prisma */}
-
-          {/* <div>
-            <label className="text-white text-sm" htmlFor="color">
-              Pays de provenance
-            </label>
-            <Input
-              id="color"
-              placeholder="Blanc Neige"
-              type="text"
-              className="text-noir-900"
-              {...form.register("color")}
-            />
-          </div> */}
           <div>
             <label className="text-white text-sm" htmlFor="country">
               Pays de provenance
             </label>
             <select
               id="country"
-              {...form.register("country")} // Enregistre la sélection dans le formulaire
+              {...form.register("country")}
               className="text-noir-900"
             >
               <option value="">-- Sélectionnez un pays --</option>
@@ -237,36 +205,43 @@ export default function VariantForm({
             </label>
             <Input
               id="stock"
-              placeholder="Blanc Neige"
-              type="text"
+              type="number"
               className="text-noir-900"
-              {...form.register("stock")}
+              {...form.register("stock", { valueAsNumber: true })}
             />
           </div>
         </div>
+
         <div className="flex flex-col gap-1">
-          <label className="text-white text-sm" htmlFor="color">
+          <label className="text-white text-sm" htmlFor="description">
             Description
           </label>
           <textarea
-            id="color"
+            id="description"
             placeholder="Description du téléphone"
             className="text-noir-900 text-sm rounded-md p-2 h-32"
-            {...form.register("color")}
+            {...form.register("description")}
           />
         </div>
-        {/* MODIFER !!!! - INPUT POUR CHARGER LES IMAGES */}
+
+        {/* Upload des Images */}
         <div className="flex flex-col gap-1">
-          <label className="text-white text-sm" htmlFor="name">
+          <label className="text-white text-sm" htmlFor="images">
             Ajouter les images
           </label>
-          {/* <Input
-            id="name"
-            type="text"
-            placeholder="Japon"
+          <input
+            id="images"
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={(e) => {
+              const files = e.target.files;
+              if (files) {
+                setSelectedFiles(Array.from(files));
+              }
+            }}
             className="text-noir-900"
-            {...form.register("name")}
-          /> */}
+          />
         </div>
 
         <FormError message={error} />

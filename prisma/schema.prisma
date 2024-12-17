@@ -129,7 +129,7 @@ model PhoneVariant {
   country       Country?    @relation(fields: [countryId], references: [id], onDelete: Cascade) 
   price         Float
   description   String
-  caract        String
+  caract        String?
   stock         Int           @default(0)
   isActive      Boolean       @default(true)
   images        PhoneImage[]
@@ -142,10 +142,10 @@ model PhoneVariant {
 
 model PhoneImage {
   id          String      @id @default(cuid())
-  variantId   String
+  variantId   String?
   url         String
   description String?
-  PhoneVariant PhoneVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  PhoneVariant PhoneVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
 
   @@map("phone_image")
 }
@@ -153,7 +153,7 @@ model PhoneImage {
 model Country {
   id          String   @id @default(cuid())
   name        String   @unique
-  imageUrl    String
+  imageUrl    String?
   phoneVariants PhoneVariant[] 
 
   @@map("country")

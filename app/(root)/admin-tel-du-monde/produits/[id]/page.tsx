@@ -32,14 +32,17 @@ export default async function VariantsAdminPage({
 
   return (
     <section className="wrapper">
-      <h2 className="font-font1 text-white">Variantes du modèle</h2>
+        <div className="flex gap-9 mb-5 items-center">
+          <h2 className="font-font1 text-white">Variantes du modèle</h2>
+          <AddVariantBtn userId={user?.id} modelId={id} />
+        </div>
       <div className="grid grid-cols-2 gap-2">
         {variants.map((variant) => (
           <div
             key={variant.id}
             className="bg-noir-800 text-white font-font1 p-2 rounded-md hover:bg-noir-700 transition-all ease-in-out duration-150 text-center"
           >
-            <p>{variant.id}</p>
+            <p>1 | {variant.id}</p>
           </div>
         ))}
       </div>
