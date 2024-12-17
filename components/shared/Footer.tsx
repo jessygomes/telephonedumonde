@@ -4,9 +4,11 @@ import { LogoutBtn } from "../Auth/LogOutBtn";
 
 export default function Footer() {
   return (
-    <footer className="text-white bg-noir-900 py-8">
+    <footer className="text-white bg-noir-900 py-20">
       <div className="flex-center flex-col gap-8">
-        <p className="font-font1 tracking-widest text-xl">TELEPHONE DU MONDE</p>
+        <p className="font-font1 tracking-widest text-xl p-4 border rounded-md">
+          Téléphone du Monde
+        </p>
 
         <LogoutBtn>
           <p className="text-white text-xs">DECONNEXION</p>

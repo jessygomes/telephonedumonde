@@ -28,6 +28,7 @@ export const NewVerificationForm = () => {
         setSuccess(data?.success);
       })
       .catch((error) => {
+        console.error(error);
         setError(
           "Une erreur est survenue lors de la vérification de votre email."
         );
@@ -42,7 +43,8 @@ export const NewVerificationForm = () => {
     <CardWrapper
       headerLabel="Confirmation de votre adresse mail"
       backButtonLabel="Retourner à la page de connexion"
-      backButtonHref="/se-connecter"
+      backButtonHref="/"
+      showSocial={false}
     >
       <div className="flex items-center w-full justify-center">
         {/* {!success && !error && <BeatLoader color="purple" />} */}

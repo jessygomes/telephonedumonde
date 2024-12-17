@@ -85,6 +85,7 @@ export const login = async (values: z.infer<typeof userLoginSchema>) => {
       password,
       redirectTo: DEFAULT_LOGIN_REDIRECT,
     });
+    return { success: "Connexion réussie" };
   } catch (error) {
     // Ici, on récupère les erreurs envoyé par nextAuth en fonction du type d'erreur
     if (error instanceof AuthError) {
