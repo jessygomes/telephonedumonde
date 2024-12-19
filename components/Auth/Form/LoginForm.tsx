@@ -16,10 +16,14 @@ import { Input } from "@/components/ui/input";
 import { FormError } from "@/components/shared/Form/FormError";
 import { FormSuccess } from "@/components/shared/Form/FormSucess";
 
-import { cn } from "@/lib/utils/utils";
 import { BottomGradient } from "@/components/ui/BottomGradient";
+import Link from "next/link";
 
-export const LoginForm = () => {
+interface LoginFormProps {
+  onClose?: () => void;
+}
+
+export const LoginForm: React.FC<LoginFormProps> = ({ onClose }) => {
   const searchParams = useSearchParams();
   const urlError =
     searchParams.get("error") === "OauthAccountNotLinked"
@@ -65,6 +69,9 @@ export const LoginForm = () => {
             if (data?.success) {
               form.reset();
               setSuccess(data.success);
+              if (onClose) {
+                onClose();
+              }
             }
 
             if (data?.twoFactor) {
@@ -79,79 +86,73 @@ export const LoginForm = () => {
   };
 
   return (
-    <CardWrapper
-      headerLabel="Connectez-vous"
-      backButtonLabel="Vous n'avez pas de compte ? Créer un compte"
-      backButtonHref="/creer-mon-compte"
-      showSocial
-    >
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4"
+    <div className="flex flex-col">
+      <CardWrapper
+        headerLabel="Connectez-vous"
+        backButtonLabel="Vous n'avez pas de compte ? Créer un compte"
+        backButtonHref="/creer-mon-compte"
+        showSocial
       >
-        {showTwoFactor && (
-          <div>
-            <Label htmlFor="code">Code de vérification</Label>
-            <Input id="code" placeholder="123456" type="text" />
-          </div>
-        )}
-
-        {!showTwoFactor && (
-          <>
-            <LabelInputContainer>
-              <label className="text-white text-sm" htmlFor="mail">
-                Email
-              </label>
-              <Input
-                id="mail"
-                placeholder="Tyler"
-                type="text"
-                {...form.register("email")}
-              />
-              <BottomGradient />
-            </LabelInputContainer>
-
-            <LabelInputContainer>
-              <label className="text-white text-sm" htmlFor="mail">
-                Mot de passe
-              </label>
-              <Input
-                id="password"
-                placeholder="Tyler"
-                type="password"
-                {...form.register("password")}
-              />
-              <BottomGradient />
-            </LabelInputContainer>
-          </>
-        )}
-
-        <FormError message={error || urlError} />
-        <FormSuccess message={success} />
-
-        <button
-          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-          type="submit"
-          disabled={isPending}
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-4"
         >
-          SE CONNECTER &rarr;
-          <BottomGradient />
-        </button>
-      </form>
-    </CardWrapper>
-  );
-};
+          {showTwoFactor && (
+            <div>
+              <Label htmlFor="code">Code de vérification</Label>
+              <Input id="code" placeholder="123456" type="text" />
+            </div>
+          )}
 
-const LabelInputContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("flex flex-col space-y-2 w-full", className)}>
-      {children}
+          {!showTwoFactor && (
+            <>
+              <div>
+                <label className="text-white text-sm" htmlFor="mail">
+                  Email
+                </label>
+                <Input
+                  id="mail"
+                  placeholder="monde@mail.com"
+                  type="text"
+                  className="text-noir-900"
+                  {...form.register("email")}
+                />
+              </div>
+
+              <div>
+                <label className="text-white text-sm" htmlFor="mail">
+                  Mot de passe
+                </label>
+                <Input
+                  id="password"
+                  placeholder="Mot de passe"
+                  type="password"
+                  className="text-noir-900"
+                  {...form.register("password")}
+                />
+              </div>
+            </>
+          )}
+
+          <FormError message={error || urlError} />
+          <FormSuccess message={success} />
+
+          <button
+            className="bg-gradient-to-t px-2 relative group/btn from-primary-900  to-primary-500 block w-full text-white rounded-md h-10 font-medium "
+            type="submit"
+            disabled={isPending}
+          >
+            SE CONNECTER &rarr;
+            <BottomGradient />
+          </button>
+        </form>
+      </CardWrapper>
+      <Link
+        className="text-center text-noir-100 text-xs hover:text-white/70 transition-all ease-in-out duration-150"
+        href="/auth/reset"
+      >
+        Mot de passe oublié ?
+      </Link>
     </div>
   );
 };
