@@ -13,8 +13,6 @@ import { BottomGradient } from "@/components/ui/BottomGradient";
 import { FormError } from "@/components/shared/Form/FormError";
 import { FormSuccess } from "@/components/shared/Form/FormSucess";
 
-import { cn } from "@/lib/utils/utils";
-
 export default function ResetForm() {
   const [isPending, startTransition] = useTransition();
 
@@ -55,7 +53,7 @@ export default function ResetForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col gap-4"
       >
-        <LabelInputContainer>
+        <div>
           <label className="text-white text-sm" htmlFor="mail">
             Email
           </label>
@@ -66,7 +64,7 @@ export default function ResetForm() {
             {...form.register("email")}
           />
           <BottomGradient />
-        </LabelInputContainer>
+        </div>
 
         <FormError message={error} />
         <FormSuccess message={success} />
@@ -84,16 +82,3 @@ export default function ResetForm() {
   );
 }
 
-const LabelInputContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("flex flex-col space-y-2 w-full", className)}>
-      {children}
-    </div>
-  );
-};
