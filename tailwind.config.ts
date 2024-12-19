@@ -1,5 +1,9 @@
 import type { Config } from "tailwindcss";
 
+const {
+  default: flattenColorPalette,
+} = require("tailwindcss/lib/util/flattenColorPalette");
+
 export default {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,7 +13,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        font1: ["coolvetica", "sans-serif"],
+        font1: ["asap", "sans-serif"],
+        fontb: ["saira", "sans-serif"],
       },
       colors: {
         background: "var(--background)",
@@ -24,6 +29,13 @@ export default {
           800: "#840805",
           900: "#6a0704",
         },
+        second: {
+          500: "#FF8B00",
+          600: "#FF7A00",
+          700: "#FF6900",
+          800: "#FF5800",
+          900: "#FF4700",
+        },
         noir: {
           900: "#020202",
           800: "#0a0a0a",
@@ -36,7 +48,32 @@ export default {
           100: "#424242",
         },
       },
+      animation: {
+        aurora: "aurora 60s linear infinite",
+      },
+      keyframes: {
+        aurora: {
+          from: {
+            backgroundPosition: "50% 50%, 50% 50%",
+          },
+          to: {
+            backgroundPosition: "350% 50%, 350% 50%",
+          },
+        },
+      },
     },
   },
-  plugins: [],
+  plugins: [addVariablesForColors],
 } satisfies Config;
+
+function addVariablesForColors({ addBase, theme }: any) {
+  let allColors = flattenColorPalette(theme("colors"));
+  let newVars = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+  );
+
+  addBase({
+    ":root": newVars,
+  });
+}
+
