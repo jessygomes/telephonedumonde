@@ -21,4 +21,3 @@ export function Social() {
     </div>
   );
 }
-

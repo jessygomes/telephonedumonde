@@ -10,9 +10,9 @@ export default async function Header() {
   const session = await auth();
 
   return (
-    <header className="wrapper text-white">
+    <header className="px-8 lg:px-16 text-white sticky top-0 z-50 bg-noir-900 overflow-hidden">
       <div className="flex justify-between items-center">
-        <Link href={"/"} className="font-font1 text-2xl tracking-widest">
+        <Link href={"/"} className="">
           <Image
             src="/logo/Telephone_du_monde.png"
             alt="Logo"
@@ -21,25 +21,41 @@ export default async function Header() {
           />
         </Link>
 
-        <nav className="hidden md:block">
-          <NavItems />
-        </nav>
+        <div className="flex sm:gap-10 lg:gap-20">
+          <nav className="hidden md:block">
+            <NavItems
+              session={
+                session
+                  ? {
+                      ...session,
+                      user: {
+                        name: session.user?.name ?? "",
+                        email: session.user?.email ?? "",
+                        role: session.user?.role ?? "",
+                      },
+                    }
+                  : null
+              }
+            />
+          </nav>
 
-        <nav className="hidden md:flex items-center">
-          <NavItemsBis
-            session={
-              session
-                ? {
-                    ...session,
-                    user: {
-                      name: session.user?.name ?? "",
-                      email: session.user?.email ?? "",
-                    },
-                  }
-                : null
-            }
-          />
-        </nav>
+          <nav className="hidden md:flex items-center">
+            <NavItemsBis
+              session={
+                session
+                  ? {
+                      ...session,
+                      user: {
+                        name: session.user?.name ?? "",
+                        email: session.user?.email ?? "",
+                        role: session.user?.role ?? "",
+                      },
+                    }
+                  : null
+              }
+            />
+          </nav>
+        </div>
 
         <NavMobile
           session={
@@ -49,6 +65,7 @@ export default async function Header() {
                   user: {
                     name: session.user?.name ?? "",
                     email: session.user?.email ?? "",
+                    role: session.user?.role ?? "",
                   },
                 }
               : null
