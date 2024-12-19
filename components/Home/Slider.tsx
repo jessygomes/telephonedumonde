@@ -32,14 +32,13 @@ export default function Slider() {
             <Image
               src="/Carrousel/canada.png"
               alt="Logo"
-              layout="fill"
-              objectFit="cover"
-              objectPosition="top"
-              className="rounded-md pt-10"
+              width={1920}
+              height={1080}
+              className="rounded-md pt-10 object-cover object-top"
               quality={100}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 to-transparent h-32 z-0"></div>
-            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 to-transparent h-32 z-0"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 via-noir-900 to-transparent h-32 z-0"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 via-noir-900 to-transparent h-32 z-0"></div>
 
             <h2 className="w-full absolute sm:left-10 inset-0 mt-14 sm:mt-24 text-center z-10">
               <span className="sm:mt-2 font-fontb text-white uppercase text-base sm:text-4xl font-extrabold tracking-wide">
@@ -61,14 +60,13 @@ export default function Slider() {
             <Image
               src="/Carrousel/inde.png"
               alt="Logo"
-              layout="fill"
-              objectFit="cover"
-              objectPosition="top"
-              className="rounded-md pt-10"
+              width={1920}
+              height={1080}
+              className="rounded-md pt-10 object-cover object-top"
               quality={100}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 to-transparent h-32 z-0"></div>
-            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 to-transparent h-32 z-0"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 via-noir-900 to-transparent h-32 z-0"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 via-noir-900 to-transparent h-32 z-0"></div>
 
             <h2 className="w-full absolute sm:left-10 inset-0 mt-14 sm:mt-24 text-center z-10">
               <span className="sm:mt-2 font-fontb text-white uppercase text-base sm:text-4xl font-extrabold tracking-wide">
@@ -90,14 +88,13 @@ export default function Slider() {
             <Image
               src="/Carrousel/Singapore.png"
               alt="Logo"
-              layout="fill"
-              objectFit="cover"
-              objectPosition="top"
-              className="rounded-md pt-10"
+              width={1920}
+              height={1080}
+              className="rounded-md pt-10 object-cover object-top"
               quality={100}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 to-transparent h-32 z-0"></div>
-            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 to-transparent h-32 z-0"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 via-noir-900 to-transparent h-32 z-0"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 via-noir-900 to-transparent h-32 z-0"></div>
 
             <h2 className="w-full absolute sm:left-10 inset-0 mt-14 sm:mt-24 text-center z-10">
               <span className="sm:mt-2 font-fontb text-white uppercase text-base sm:text-4xl font-extrabold tracking-wide">
@@ -119,14 +116,13 @@ export default function Slider() {
             <Image
               src="/Carrousel/japon.png"
               alt="Logo"
-              layout="fill"
-              objectFit="cover"
-              objectPosition="top"
-              className="rounded-md pt-10"
+              width={1920}
+              height={1080}
+              className="rounded-md pt-10 object-cover object-top"
               quality={100}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 to-transparent h-32 z-0"></div>
-            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 to-transparent h-32 z-0"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 via-noir-900 to-transparent h-32 z-0"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-noir-900 via-noir-900 to-transparent h-32 z-0"></div>
 
             <h2 className="w-full absolute sm:left-10 inset-0 mt-14 sm:mt-24 text-center z-10">
               <span className="sm:mt-2 font-fontb text-white uppercase text-base sm:text-4xl font-extrabold tracking-wide">
