@@ -32,7 +32,7 @@ export const ourFileRouter = {
 
         return { variantId: input.variantId };
       }
-
+      
       if ("countryId" in input) {
         console.log("countryId reçu :", input.countryId);
 
@@ -53,23 +53,23 @@ export const ourFileRouter = {
 
         if ("variantId" in metadata) {
           // Enregistrer dans phoneImage
-          await db.phoneImage.create({
-            data: {
-              url: file.url, // L'URL du fichier UploadThing
-              description: null,
-              variantId: metadata.variantId,
-            },
-          });
+          // await db.phoneImage.create({
+          //   data: {
+          //     url: file.url, // L'URL du fichier UploadThing
+          //     description: null,
+          //     variantId: metadata.variantId,
+          //   },
+          // });
 
           console.log("Image sauvegardée dans phoneImage !");
         } else if ("countryId" in metadata) {
           // Enregistrer directement dans country
-          await db.country.update({
-            where: { id: metadata.countryId },
-            data: {
-              imageUrl: file.url, 
-            },
-          });
+          // await db.country.update({
+          //   where: { id: metadata.countryId },
+          //   data: {
+          //     imageUrl: file.url, 
+          //   },
+          // });
 
           console.log("Image sauvegardée dans country !");
         } else {

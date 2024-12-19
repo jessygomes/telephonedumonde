@@ -4,6 +4,7 @@ import DeleteModalButton from "@/components/Admin/Phones/DeleteModalBtn";
 import EditModelButton from "@/components/Admin/Phones/EditModelBtn";
 import FilterBrand from "@/components/Admin/Phones/FilterBrand";
 import { Search } from "@/components/Admin/Phones/Search";
+import { ShowCountry } from "@/components/Admin/Phones/ShowCountry";
 
 import { showAllModels } from "@/lib/actions/model.actions";
 import { currentUser } from "@/lib/auth";
@@ -31,12 +32,14 @@ export default async function ProductsPage({
         <div className="flex gap-4">
           <AddModelButton userId={user?.id} />
           <AddCountryBtn userId={user?.id} />
+          <ShowCountry />
         </div>
       </div>
 
       <div className="flex gap-2">
         <Search />
         <FilterBrand />
+        
       </div>
 
       {models.data.length === 0 && (

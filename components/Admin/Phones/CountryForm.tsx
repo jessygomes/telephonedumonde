@@ -34,90 +34,78 @@ export default function CountryForm({
   const { startUpload, isUploading } = useUploadThing("imageUploader");
 
   const form = useForm<z.infer<typeof countryFormSchema>>({
-    resolver: zodResolver(countryFormSchema),
+    resolver: async (data, context, options) => {
+      const result = await zodResolver(countryFormSchema)(data, context, options);
+      console.log("Validation Zod :", result);
+      return result;
+    },
     defaultValues: {
       name: "",
       imageUrl: "",
     },
     mode: "onSubmit",
   });
-
+  
   async function onSubmit(values: z.infer<typeof countryFormSchema>) {
     setError("");
     setSuccess("");
   
     try {
-      console.log("Données du formulaire :", values);
+      console.log("Données du formulaire avant l'upload :", values);
   
-      // Étape 1 : Ajout du pays
-      const newCountry = await addCountry(values, userId!) as {
-        name: string;
-        imageUrl: string | null;
-        id: string;
-      };
+      let imageUrl = "";
   
-      if (!newCountry) {
-        throw new Error("Erreur lors de l'ajout du pays");
-      }
-  
-      console.log("Nouveau pays ajouté :", newCountry);
-  
-      // Étape 2 : Upload de l'image
+      // Étape 1 : Upload de l'image si un fichier est sélectionné
       if (selectedPicture.length > 0) {
-        const upload = await startUpload(selectedPicture, { countryId: newCountry.id });
+        const upload = await startUpload(selectedPicture, { countryId: "1" });
   
-        if (!upload || upload.length === 0) {
-          throw new Error("Erreur lors de l'upload de l'image");
+        if (!upload || upload.length === 0 || !upload[0]?.url) {
+          throw new Error("Erreur lors de l'upload de l'image.");
         }
   
-        const imageUrl = upload[0].url;
-  
-        // Étape 3 : Mise à jour de l'URL de l'image dans la base de données
-        await db.country.update({
-          where: { id: newCountry.id },
-          data: { imageUrl },
-        });
-  
-        console.log("URL de l'image mise à jour :", imageUrl);
+        imageUrl = upload[0].url;
+        console.log("Image uploadée avec succès :", imageUrl);
+      } else {
+        throw new Error("Aucun fichier d'image sélectionné.");
       }
   
-      setSuccess("Pays ajouté avec succès");
+      // Étape 2 : Ajouter le pays avec l'URL de l'image
+      const newCountry = await addCountry(
+        { name: values.name, imageUrl }, 
+        userId!
+      );
+  
+      if (!newCountry) {
+        throw new Error("Erreur lors de l'ajout du pays.");
+      }
+
+      setSuccess("Pays ajouté avec succès !");
+      setSelectedPicture([]);
       form.reset();
       setIsModalOpen(false);
       router.refresh();
     } catch (error) {
       console.error("Erreur dans onSubmit :", error);
-      setError("Erreur lors de l'ajout du pays");
+      setError((error as Error).message || "Erreur lors de l'ajout du pays.");
     }
   }
+  
+  
   
   return (
     <div className="flex flex-col gap-8">
       {" "}
-      <h3 className="text-white text-xl font-font1 tracking-widest">
-        Ajouter un pays de provenance
-      </h3>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4"
-      >
+      <h3 className="text-white text-xl font-font1 tracking-widest">Ajouter un pays de provenance</h3>
+
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+
         <div className="flex flex-col gap-1">
-          <label className="text-white text-sm" htmlFor="name">
-            Nom du pays
-          </label>
-          <Input
-            id="name"
-            type="text"
-            placeholder="Japon"
-            className="text-noir-900"
-            {...form.register("name")}
-          />
+          <label className="text-white text-sm" htmlFor="name">Nom du pays</label>
+          <Input id="name" type="text" placeholder="Japon" className="text-noir-900" {...form.register("name")} />
         </div>
 
         <div className="flex flex-col gap-1">
-        <label className="text-white text-sm" htmlFor="images">
-          Ajouter le drapeau
-        </label>
+        <label className="text-white text-sm" htmlFor="images">Ajouter le drapeau</label>
         <input
           id="images"
           type="file"
@@ -132,7 +120,6 @@ export default function CountryForm({
           className="text-noir-900"
         />
       </div>
-
 
         <FormError message={error} />
         <FormSuccess message={success} />

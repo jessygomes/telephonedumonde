@@ -11,9 +11,9 @@ import { FormError } from "@/components/shared/Form/FormError";
 import { FormSuccess } from "@/components/shared/Form/FormSucess";
 import { BottomGradient } from "@/components/ui/BottomGradient";
 import { variantFormSchema } from "@/lib/validator";
-import { addVariant, getCountries } from "@/lib/actions/variant.actions";
+import { addVariant, updateVariant} from "@/lib/actions/variant.actions";
+import { getCountries } from "@/lib/actions/country.actions";
 import { useUploadThing } from "@/lib/uploadthing";
-import type { OurFileRouter } from "@/app/api/uploadthing/core";
 
 type VariantFormProps = {
   userId: string | undefined;
@@ -40,6 +40,8 @@ export default function VariantForm({ userId, type, modelId, variant, setIsModal
   const [countries, setCountries] = useState<{ id: string; name: string }[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]); // Fichiers sélectionnés
   const { startUpload, isUploading } = useUploadThing("imageUploader");
+
+  const variantId = variant?.id;
 
 
   useEffect(() => {
@@ -135,6 +137,54 @@ export default function VariantForm({ userId, type, modelId, variant, setIsModal
         setError("Erreur lors de l'ajout de la variante.");
       }
     }
+
+    if (type === "edit") {
+      try {
+
+        if (!modelId) {
+          setError("modelId est requis pour ajouter une variante.");
+          return;
+        }
+
+        let imageUrls = values.imageUrl || [];
+
+        if (selectedFiles.length > 0) {
+          const uploadedImages = await startUpload(selectedFiles, { variantId: modelId });
+    
+          if (!uploadedImages || uploadedImages.length === 0) {
+            throw new Error("Échec de l'upload des images.");
+          }
+    
+          const newImageUrls = uploadedImages.map((file) => file.url);
+          imageUrls = [...newImageUrls]; 
+          console.log("URLs des images après upload :", imageUrls);
+        }
+
+        values.imageUrl = imageUrls;
+
+        if (!variantId) {
+          setError("variantId est requis pour éditer une variante.");
+          return;
+        }
+
+        const updatedVariant = await updateVariant(variantId, values);
+
+        if (!updatedVariant || !("id" in updatedVariant)) {
+          setError("Échec lors de l'édition de la variante.");
+          return;
+        }
+
+        console.log("Variante mise à jour :", updatedVariant);
+
+        setSelectedFiles([]);
+        setSuccess("Variante modifiée avec succès !");
+        setIsModalOpen(false);
+        router.refresh();
+      } catch (error) {
+        console.error("Erreur dans onSubmit :", error);
+        setError("Erreur lors de l'édition de la variante.");
+      }
+    }
   }
   
 
@@ -146,50 +196,25 @@ export default function VariantForm({ userId, type, modelId, variant, setIsModal
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="flex gap-4">
+
           <div>
-            <label className="text-white text-sm" htmlFor="price">
-              Prix
-            </label>
-            <Input
-              id="price"
-              type="number"
-              className="text-noir-900"
-              {...form.register("price", { valueAsNumber: true })}
-            />
-          </div>
-          <div>
-            <label className="text-white text-sm" htmlFor="memory">
-              Stockage
-            </label>
-            <Input
-              id="memory"
-              type="number"
-              className="text-noir-900"
-              {...form.register("memory", { valueAsNumber: true })}
-            />
-          </div>
-          <div>
-            <label className="text-white text-sm" htmlFor="color">
-              Couleur
-            </label>
-            <Input
-              id="color"
-              placeholder="Blanc Neige"
-              type="text"
-              className="text-noir-900"
-              {...form.register("color")}
-            />
+            <label className="text-white text-sm" htmlFor="price">Prix</label>
+            <Input id="price" type="number" className="text-noir-900" defaultValue={initialValues.price} {...form.register("price", { valueAsNumber: true })}/>
           </div>
 
           <div>
-            <label className="text-white text-sm" htmlFor="country">
-              Pays de provenance
-            </label>
-            <select
-              id="country"
-              {...form.register("country")}
-              className="text-noir-900"
-            >
+            <label className="text-white text-sm" htmlFor="memory">Stockage</label>
+            <Input id="memory" type="number" className="text-noir-900"  defaultValue={initialValues.memory} {...form.register("memory", { valueAsNumber: true })}/>
+          </div>
+
+          <div>
+            <label className="text-white text-sm" htmlFor="color">Couleur</label>
+            <Input id="color" placeholder="Blanc Neige" type="text" className="text-noir-900"  defaultValue={initialValues.color} {...form.register("color")}/>
+          </div>
+
+          <div>
+            <label className="text-white text-sm" htmlFor="country">Pays de provenance</label>
+            <select id="country" {...form.register("country")} className="text-noir-900" defaultValue={initialValues.country}>
               <option value="">-- Sélectionnez un pays --</option>
               {countries.map((country) => (
                 <option key={country.id} value={country.id}>
@@ -207,6 +232,7 @@ export default function VariantForm({ userId, type, modelId, variant, setIsModal
               id="stock"
               type="number"
               className="text-noir-900"
+              defaultValue={initialValues.stock}
               {...form.register("stock", { valueAsNumber: true })}
             />
           </div>
@@ -220,6 +246,7 @@ export default function VariantForm({ userId, type, modelId, variant, setIsModal
             id="description"
             placeholder="Description du téléphone"
             className="text-noir-900 text-sm rounded-md p-2 h-32"
+            defaultValue={initialValues.description}
             {...form.register("description")}
           />
         </div>
@@ -227,7 +254,8 @@ export default function VariantForm({ userId, type, modelId, variant, setIsModal
         {/* Upload des Images */}
         <div className="flex flex-col gap-1">
           <label className="text-white text-sm" htmlFor="images">
-            Ajouter les images
+            {type === "add" ? "Ajouter les images" : "Rajouter des images"}
+            
           </label>
           <input
             id="images"
@@ -251,7 +279,7 @@ export default function VariantForm({ userId, type, modelId, variant, setIsModal
           className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
           type="submit"
         >
-          Ajouter la variante &rarr;
+           {type === "add" ? "Ajouter la variante →" : "Modifier la variante →"}
           <BottomGradient />
         </button>
       </form>
