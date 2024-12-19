@@ -25,3 +25,4 @@ export async function POST(req: NextApiRequest) {
     return Response.json({ message: "Error sending email" });
   }
 }
+
