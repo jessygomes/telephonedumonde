@@ -11,7 +11,6 @@ import { useState, useTransition } from "react";
 import { CardWrapper } from "../CardWrapper";
 import { BottomGradient } from "@/components/ui/BottomGradient";
 
-import { cn } from "@/lib/utils/utils";
 import { Input } from "@/components/ui/input";
 import { FormError } from "@/components/shared/Form/FormError";
 import { FormSuccess } from "@/components/shared/Form/FormSucess";
@@ -63,7 +62,7 @@ export default function NewPasswordForm() {
         className="flex flex-col gap-4"
       >
         <div className="space-y-4">
-          <LabelInputContainer>
+          <div>
             <label className="text-white text-sm" htmlFor="password">
               Mot de passe
             </label>
@@ -73,9 +72,9 @@ export default function NewPasswordForm() {
               {...form.register("password")}
             />
             <BottomGradient />
-          </LabelInputContainer>
+          </div>
 
-          <LabelInputContainer>
+          <div>
             <label
               className="text-white text-sm"
               htmlFor="passwordConfirmation"
@@ -88,7 +87,7 @@ export default function NewPasswordForm() {
               {...form.register("passwordConfirmation")}
             />
             <BottomGradient />
-          </LabelInputContainer>
+          </div>
         </div>
         <FormError message={error} />
         <FormSuccess message={success} />
@@ -106,16 +105,3 @@ export default function NewPasswordForm() {
   );
 }
 
-const LabelInputContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("flex flex-col space-y-1 w-full", className)}>
-      {children}
-    </div>
-  );
-};
