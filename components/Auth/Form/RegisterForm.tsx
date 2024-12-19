@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { FormError } from "@/components/shared/Form/FormError";
 import { FormSuccess } from "@/components/shared/Form/FormSucess";
 
-import { cn } from "@/lib/utils/utils";
 import { BottomGradient } from "@/components/ui/BottomGradient";
 import { CardWrapper } from "../CardWrapper";
 
@@ -63,7 +62,7 @@ export const RegisterForm = () => {
         className="flex flex-col gap-4"
       >
         <div className="flex gap-2">
-          <LabelInputContainer>
+          <div>
             <label className="text-white text-sm" htmlFor="firstName">
               Prénom
             </label>
@@ -74,9 +73,9 @@ export const RegisterForm = () => {
               {...form.register("firstName")}
             />
             <BottomGradient />
-          </LabelInputContainer>
+          </div>
 
-          <LabelInputContainer>
+          <div>
             <label className="text-white text-sm" htmlFor="lastName">
               Nom
             </label>
@@ -87,10 +86,10 @@ export const RegisterForm = () => {
               {...form.register("lastName")}
             />
             <BottomGradient />
-          </LabelInputContainer>
+          </div>
         </div>
 
-        <LabelInputContainer>
+        <div>
           <label className="text-white text-sm" htmlFor="mail">
             Email
           </label>
@@ -101,10 +100,10 @@ export const RegisterForm = () => {
             {...form.register("email")}
           />
           <BottomGradient />
-        </LabelInputContainer>
+        </div>
 
         <div className="flex gap-2">
-          <LabelInputContainer>
+          <div>
             <label className="text-white text-sm" htmlFor="password">
               Mot de passe
             </label>
@@ -114,9 +113,9 @@ export const RegisterForm = () => {
               {...form.register("password")}
             />
             <BottomGradient />
-          </LabelInputContainer>
+          </div>
 
-          <LabelInputContainer>
+          <div>
             <label
               className="text-white text-sm"
               htmlFor="passwordConfirmation"
@@ -129,7 +128,7 @@ export const RegisterForm = () => {
               {...form.register("passwordConfirmation")}
             />
             <BottomGradient />
-          </LabelInputContainer>
+          </div>
         </div>
 
         <FormError message={error} />
@@ -145,19 +144,5 @@ export const RegisterForm = () => {
         </button>
       </form>
     </CardWrapper>
-  );
-};
-
-const LabelInputContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("flex flex-col space-y-1 w-full", className)}>
-      {children}
-    </div>
   );
 };
